@@ -1,0 +1,6 @@
+{
+  "name": "VEXA",
+  "description": "VEXA: AI Engineering Operating System powered by Vayu AGI. Diagnose, improve, secure, and optimize your AI systems.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
