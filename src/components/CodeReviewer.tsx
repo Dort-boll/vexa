@@ -55,15 +55,15 @@ const PRESETS: CodePreset[] = [
     filename: 'aiClient.js',
     category: 'Security Leak',
     description: 'Developer has hardcoded private credentials directly inside the client bundle, exposing them to anyone opening browser inspect elements.',
-    badCode: `import { GoogleGenAI } from "@google/genai";\n\n// ❌ Critical Security Risk: Hardcoded private API Key exposed to frontend browser bundles!\nconst geminiKey = "AIzaSyD-G79vHkP120_LqW98b2-zXmN-vVex981"; \nconst ai = new GoogleGenAI({ apiKey: geminiKey });\n\nexport async function askVexa(prompt) {\n  const response = await ai.models.generateContent({\n    model: 'gemini-2.5-flash',\n    contents: prompt,\n  });\n  return response.text;\n}`,
-    goodCode: `// ✅ Protected backend proxy gateway: key is stored safely on the server\nexport async function askVexa(prompt) {\n  // 1. Client proxies prompt request to server endpoint to hide keys\n  const response = await fetch('/api/query', {\n    method: 'POST',\n    headers: { 'Content-Type': 'application/json' },\n    body: JSON.stringify({ prompt })\n  });\n  \n  if (!response.ok) throw new Error('API request failed');\n  const json = await response.json();\n  return json.text;\n}`,
+    badCode: `// ❌ Critical Security Risk: Hardcoded private API Key exposed to frontend browser bundles!\nconst apiKey = "sk-proj-982HA10X9x8hV_e-201aLwVex981";\n\nexport async function askAI(prompt) {\n  const response = await fetch('https://api.openai.com/v1/chat/completions', {\n    method: 'POST',\n    headers: {\n      'Content-Type': 'application/json',\n      'Authorization': \`Bearer \${apiKey}\`\n    },\n    body: JSON.stringify({\n      model: 'gpt-4o-mini',\n      messages: [{ role: 'user', content: prompt }]\n    })\n  });\n  const json = await response.json();\n  return json.choices[0].message.content;\n}`,
+    goodCode: `// ✅ Protected Cloud-Native Architecture: Puter.js eliminates client-side keys entirely\nexport async function askAI(prompt) {\n  // Puter manages API keys, billing, and auth securely in its cloud-native sandbox\n  const response = await puter.ai.chat(prompt, {\n    model: 'nvidia/nemotron-3.5-content-safety:free'\n  });\n  return response.message.content;\n}`,
     metrics: {
-      latency: '+15ms Proxy Overhead',
-      efficiency: '100% Credential Security',
+      latency: '-30% Handshake Overhead',
+      efficiency: '100% Keyless Security',
       safetyScore: 100
     },
     issues: [
-      { line: 4, severity: 'critical', message: 'Hardcoded API Key exposed: Credentials leaked inside client source script.', fix: 'Migrate key-dependent AI logic to a secure server route (/api/query) and read credentials via process.env.GEMINI_API_KEY.' }
+      { line: 2, severity: 'critical', message: 'Hardcoded API Key exposed: Frontend source contains explicit Bearer credentials.', fix: 'Remove the hardcoded apiKey and migrate to Puter.js cloud-native SDK (puter.ai.chat) to completely eliminate local key-dependent storage.' }
     ]
   },
   {

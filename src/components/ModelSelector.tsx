@@ -5,7 +5,7 @@ import { ChevronDown, Cpu, Sparkles, Search, Check, Brain, Zap } from 'lucide-re
 export interface ModelDetail {
   id: string;
   name: string;
-  provider: 'Google' | 'OpenAI' | 'Anthropic' | 'Meta' | 'DeepSeek' | 'Custom';
+  provider: 'Google' | 'OpenAI' | 'Anthropic' | 'Meta' | 'DeepSeek' | 'Custom' | 'Nvidia';
   category: 'Reasoning' | 'General' | 'Lightweight';
   contextWindow: string;
   speed: 'Ultra-Fast' | 'Fast' | 'Moderate' | 'Deep-Thinking';
@@ -13,34 +13,15 @@ export interface ModelDetail {
 }
 
 export const ALL_MODELS: ModelDetail[] = [
-  // Google
-  { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', provider: 'Google', category: 'Lightweight', contextWindow: '1M', speed: 'Ultra-Fast', description: 'Exceptional speed, cost efficiency, and large-context parsing.' },
-  { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro', provider: 'Google', category: 'Reasoning', contextWindow: '2M', speed: 'Moderate', description: 'Advanced multimodal reasoning and analytical depth.' },
-  { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', provider: 'Google', category: 'Lightweight', contextWindow: '1M', speed: 'Ultra-Fast', description: 'Next-gen real-time agentic application driver.' },
-  { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro', provider: 'Google', category: 'General', contextWindow: '2M', speed: 'Fast', description: 'Highly stable developer workhorse with deep context retention.' },
-  { id: 'gemma-2-27b', name: 'Gemma 2 27B', provider: 'Google', category: 'Lightweight', contextWindow: '8K', speed: 'Fast', description: 'High-performance open-source edge model.' },
-
-  // OpenAI
-  { id: 'gpt-4o', name: 'GPT-4o', provider: 'OpenAI', category: 'General', contextWindow: '128K', speed: 'Fast', description: 'Omni high-speed flagship model with robust multimodal support.' },
-  { id: 'gpt-4o-mini', name: 'GPT-4o Mini', provider: 'OpenAI', category: 'Lightweight', contextWindow: '128K', speed: 'Ultra-Fast', description: 'Super efficient lightweight intelligence.' },
-  { id: 'o1', name: 'o1', provider: 'OpenAI', category: 'Reasoning', contextWindow: '200K', speed: 'Deep-Thinking', description: 'State-of-the-art chain-of-thought deep reasoning.' },
-  { id: 'o1-mini', name: 'o1 Mini', provider: 'OpenAI', category: 'Reasoning', contextWindow: '128K', speed: 'Fast', description: 'Fast mathematical & logical reasoning specialist.' },
-  { id: 'o3-mini', name: 'o3-mini', provider: 'OpenAI', category: 'Reasoning', contextWindow: '200K', speed: 'Fast', description: 'Real-time developer & scientific reasoning champion.' },
-
-  // Anthropic
-  { id: 'claude-3-7-sonnet', name: 'Claude 3.7 Sonnet', provider: 'Anthropic', category: 'Reasoning', contextWindow: '200K', speed: 'Deep-Thinking', description: 'Hybrid reasoning and leading-edge coding capabilities.' },
-  { id: 'claude-3-5-sonnet', name: 'Claude 3.5 Sonnet', provider: 'Anthropic', category: 'General', contextWindow: '200K', speed: 'Fast', description: 'Hyper-reliable complex analytical synthesis and execution.' },
-  { id: 'claude-3-5-haiku', name: 'Claude 3.5 Haiku', provider: 'Anthropic', category: 'Lightweight', contextWindow: '200K', speed: 'Ultra-Fast', description: 'Lightning-fast, precise conversational intelligence.' },
-  { id: 'claude-3-opus', name: 'Claude 3 Opus', provider: 'Anthropic', category: 'Reasoning', contextWindow: '200K', speed: 'Moderate', description: 'Heavyweight semantic synthesizer for deep conceptual work.' },
-
-  // DeepSeek
-  { id: 'deepseek-r1', name: 'DeepSeek R1', provider: 'DeepSeek', category: 'Reasoning', contextWindow: '64K', speed: 'Deep-Thinking', description: 'Incredible open-source reasoning model, rivaling o1.' },
-  { id: 'deepseek-v3', name: 'DeepSeek V3', provider: 'DeepSeek', category: 'General', contextWindow: '128K', speed: 'Fast', description: 'Hyper cost-effective mixture-of-experts flagship.' },
-
-  // Meta Llama
-  { id: 'llama-3.3-70b', name: 'Llama 3.3 70B', provider: 'Meta', category: 'General', contextWindow: '128K', speed: 'Fast', description: 'Industry-standard open-source flagship model.' },
-  { id: 'llama-3.1-405b', name: 'Llama 3.1 405B', provider: 'Meta', category: 'Reasoning', contextWindow: '128K', speed: 'Moderate', description: 'Massive-scale premier open weights intelligence.' },
-  { id: 'llama-3.1-8b', name: 'Llama 3.1 8B', provider: 'Meta', category: 'Lightweight', contextWindow: '128K', speed: 'Ultra-Fast', description: 'Lighter local deployment framework champion.' }
+  {
+    id: 'nvidia/nemotron-3.5-content-safety:free',
+    name: 'Nvidia Nemotron 3.5 Content Safety (Free)',
+    provider: 'Nvidia',
+    category: 'Reasoning',
+    contextWindow: '128K',
+    speed: 'Ultra-Fast',
+    description: 'High performance open-weights safety-aligned model hosted on Puter cloud sandbox.'
+  }
 ];
 
 interface ModelSelectorProps {
@@ -106,6 +87,7 @@ export default function ModelSelector({
 
   const getProviderColor = (provider: string) => {
     switch (provider) {
+      case 'Nvidia': return 'text-lime-400 bg-lime-500/10 border-lime-500/20';
       case 'Google': return 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20';
       case 'OpenAI': return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
       case 'Anthropic': return 'text-amber-400 bg-amber-500/10 border-amber-500/20';

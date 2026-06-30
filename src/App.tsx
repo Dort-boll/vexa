@@ -21,7 +21,7 @@ export default function App() {
   const [user, setUser] = useState<any>(null);
   const [authChecked, setAuthChecked] = useState(false);
   const [activeTab, setActiveTab] = useState<ActiveTab>('Dashboard');
-  const [selectedModel, setSelectedModel] = useState('gpt-4o-mini');
+  const [selectedModel, setSelectedModel] = useState('nvidia/nemotron-3.5-content-safety:free');
   const [models, setModels] = useState<string[]>([]);
   const [history, setHistory] = useState<Report[]>([]);
   const [activeReport, setActiveReport] = useState<Report | null>(null);
@@ -240,13 +240,13 @@ ${optPromptInput}
     let rateInput = 0;
     let rateOutput = 0;
     switch (model) {
+      case 'nvidia/nemotron-3.5-content-safety:free':
+        return '0.00'; // Completely Free
       case 'gpt-4o':
         rateInput = 5.00; rateOutput = 15.00; break;
       case 'claude-3-5-sonnet':
         rateInput = 3.00; rateOutput = 15.00; break;
-      case 'gemini-1.5-pro':
-        rateInput = 1.25; rateOutput = 5.00; break;
-      default: // gpt-4o-mini / gemini-2.5-flash
+      default: // other models
         rateInput = 0.075; rateOutput = 0.30; break;
     }
 
@@ -824,8 +824,8 @@ ${optPromptInput}
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
                     <div className="bg-slate-950 border border-slate-900 p-4 rounded-2xl relative overflow-hidden text-center space-y-1 shadow-md">
-                      <span className="text-slate-500 block uppercase tracking-wider text-[10px]">Gemini 2.5 Flash</span>
-                      <span className="text-xl font-bold text-slate-200">${calculateCost('gemini-2.5-flash')}</span>
+                      <span className="text-slate-500 block uppercase tracking-wider text-[10px]">Nvidia Nemotron 3.5</span>
+                      <span className="text-xl font-bold text-slate-200">${calculateCost('nvidia/nemotron-3.5-content-safety:free')}</span>
                       <span className="text-[10px] text-emerald-400 block uppercase font-bold mt-1">Recommended Option</span>
                     </div>
 

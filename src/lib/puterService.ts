@@ -89,45 +89,7 @@ export class PuterService {
   }
 
   public static async listModels(): Promise<string[]> {
-    const industryList = [
-      'gemini-2.5-flash',
-      'gemini-2.5-pro',
-      'gemini-2.0-flash',
-      'gemini-1.5-pro',
-      'gemma-2-27b',
-      'gpt-4o',
-      'gpt-4o-mini',
-      'o1',
-      'o1-mini',
-      'o3-mini',
-      'claude-3-7-sonnet',
-      'claude-3-5-sonnet',
-      'claude-3-5-haiku',
-      'claude-3-opus',
-      'deepseek-r1',
-      'deepseek-v3',
-      'llama-3.3-70b',
-      'llama-3.1-405b',
-      'llama-3.1-8b'
-    ];
-    const puter = this.getPuterInstance();
-    if (puter) {
-      try {
-        const models = await puter.ai.listModels();
-        if (models && models.length > 0) {
-          const puterList = models.map((m: any) => {
-            if (typeof m === 'object' && m !== null) {
-              return m.id || m.name || String(m);
-            }
-            return String(m);
-          });
-          return Array.from(new Set([...puterList, ...industryList]));
-        }
-      } catch (e) {
-        console.warn('Puter.js listModels error:', e);
-      }
-    }
-    return industryList;
+    return ['nvidia/nemotron-3.5-content-safety:free'];
   }
 
   /**
@@ -139,7 +101,7 @@ export class PuterService {
     input: string,
     category: string,
     uploadedFiles: { name: string; content: string; size: number }[],
-    model: string = 'gpt-4o-mini'
+    model: string = 'nvidia/nemotron-3.5-content-safety:free'
   ): Promise<Report> {
     // Combine input and files for content
     const filesContentSummary = uploadedFiles.map(f => `File: ${f.name}\nSize: ${f.size} bytes\nContent:\n${f.content}`).join('\n\n');
@@ -226,17 +188,17 @@ export class PuterService {
     const bottlenecks: string[] = [
       "Sequential synchronous network calls block concurrency."
     ];
-    const modelRecommendations: ModelRecommendation[] = [
-      { modelName: "Gemini 2.5 Flash", suitability: "High (Fast, cheap, perfect for filtering)", pricing: "$0.075 / 1M tokens", latency: "250ms" },
-      { modelName: "Gemini 1.5 Pro", suitability: "Medium (Complex reasoning & long context)", pricing: "$1.25 / 1M tokens", latency: "1.2s" }
+     const modelRecommendations: ModelRecommendation[] = [
+      { modelName: "nvidia/nemotron-3.5-content-safety:free (via Puter)", suitability: "High (Keyless, safety-aligned, cloud-sandboxed, lightning fast)", pricing: "Puter Free Tier", latency: "110ms" },
+      { modelName: "claude-3-5-sonnet (via Puter)", suitability: "High (Top-tier semantic parsing and refactoring)", pricing: "Puter Managed Credits", latency: "380ms" }
     ];
     const steps: FixStep[] = [
       { step: "Initialize boundary assertions", completed: false },
       { step: "Configure adaptive temperature throttling", completed: false }
     ];
 
-    let beforeCode = `// Original code snippet\nfunction queryAI(prompt) {\n  return openai.chat.completions.create({\n    model: "gpt-4",\n    messages: [{role: "user", content: prompt}],\n    temperature: 0.9\n  });\n}`;
-    let afterCode = `// Optimized VEXA production-ready fix\nimport { GoogleGenAI } from '@google/genai';\n\n// Initialized lazily with safety controls\nlet aiClient = null;\nfunction getAI() {\n  if (!aiClient) {\n    const apiKey = process.env.GEMINI_API_KEY;\n    if (!apiKey) throw new Error("GEMINI_API_KEY is missing");\n    aiClient = new GoogleGenAI({ apiKey });\n  }\n  return aiClient;\n}\n\nasync function queryAI(prompt) {\n  const ai = getAI();\n  return await ai.models.generateContent({\n    model: 'gemini-2.5-flash',\n    contents: prompt,\n    config: {\n      temperature: 0.2, // Controlled temperature to prevent hallucinations\n      maxOutputTokens: 1024,\n      safetySettings: [{ category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_LOW_AND_ABOVE' }]\n    }\n  });\n}`;
+    let beforeCode = `// Original code snippet with hardcoded frontend key\nfunction queryAI(prompt) {\n  const apiKey = "sk-proj-982HA1...X9012"; // ❌ CRITICAL SECURITY LEAK\n  return fetch('https://api.openai.com/v1/chat/completions', {\n    method: 'POST',\n    headers: { 'Authorization': \`Bearer \${apiKey}\` },\n    body: JSON.stringify({ model: 'gpt-4', messages: [{role: 'user', content: prompt}] })\n  });\n}`;
+    let afterCode = `// Optimized production-ready solution utilizing Puter.js\n// Puter handles all keys, billing, and auth securely on the cloud sandbox layer. No API keys are exposed to the client browser!\nasync function queryAI(prompt) {\n  const response = await puter.ai.chat(prompt, {\n    model: 'nvidia/nemotron-3.5-content-safety:free',\n    temperature: 0.2 // Lower temperature to avoid hallucination\n  });\n  return response.message.content;\n}`;
 
     let beforePrompt = "Help me translate this input or explain it. Keep it brief.";
     let afterPrompt = "You are an expert bilingual interpreter. Translate the provided [INPUT] to target language while maintaining a formal corporate tone.\n\n[INPUT]\n{{user_input}}\n\n[CONSTRAINTS]\n- Output only the translated text.\n- Do not append any meta-explanations.";
@@ -272,7 +234,7 @@ export class PuterService {
       title = "AI Cost & Token Consumption Audit";
       score = 51;
       problemSeverity.cost = 9;
-      executiveSummary = "The AI system is drawing heavy costs due to verbose systemic prompt templates, long history logs, and non-optimized models. You are utilizing expensive models (GPT-4) for classification and parsing tasks that can easily run on modern sub-cent models like Gemini 2.5 Flash.";
+      executiveSummary = "The AI system is drawing heavy costs due to verbose systemic prompt templates, long history logs, and non-optimized models. You are utilizing expensive proprietary models for classification and parsing tasks that can easily run on modern, safety-aligned models like Nvidia Nemotron 3.5 Content Safety (Free via Puter).";
       rootCause = "Excessive system prompt preambles and heavy model selection for simple extraction/routing routines.";
       reasoningBreakdown.push(
         "Estimated 68% of token spend goes toward static prompt preambles and redundant histories.",
@@ -288,7 +250,7 @@ export class PuterService {
         "Use key-value databases for prompt templates instead of appending them in raw chat variables."
       );
       steps.push(
-        { step: "Migrate classification routes to Gemini 2.5 Flash", completed: false },
+        { step: "Migrate classification routes to nvidia/nemotron-3.5-content-safety:free (via Puter)", completed: false },
         { step: "Set up max token limits on all client-facing requests", completed: false }
       );
     }
