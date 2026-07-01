@@ -111,7 +111,7 @@ export class PuterService {
     let puterResponse: string | null = null;
     const puter = this.getPuterInstance();
     
-    if (puter && (await puter.auth.isSignedIn())) {
+    if (puter) {
       try {
         const systemPrompt = `You are VEXA, an AI Engineering Operating System. You diagnose AI systems, detect issues, optimize performance, improve architecture, fix prompts, and generate production-ready solutions. Return structured engineering reports only. Based on the user's issue: "${combinedInput}" with category: "${category}". Please return a raw JSON with fields corresponding to Report structure.`;
         const resp = await puter.ai.chat(systemPrompt + '\n' + combinedInput, { model });

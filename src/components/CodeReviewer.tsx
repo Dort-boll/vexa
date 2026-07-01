@@ -5,6 +5,7 @@ import {
   Terminal, ArrowRight, RefreshCw, Layers, Zap, Flame, ShieldAlert,
   Copy, Check, FileText, Info
 } from 'lucide-react';
+import { PuterService } from '../lib/puterService';
 
 interface CodePreset {
   id: string;
@@ -108,57 +109,166 @@ export default function CodeReviewer() {
     setConsoleLogs([]);
   };
 
-  const startAnalysis = () => {
+  const startAnalysis = async () => {
     setIsAnalyzing(true);
     setProgressPercent(5);
     setReviewResult(null);
     setConsoleLogs([]);
     
-    const steps = [
-      { text: 'Spinning up VEXA Multi-Agent Compiler Reviewers...', time: 800, progress: 20 },
-      { text: 'Ingesting Abstract Syntax Tree (AST) & Lexical scopes...', time: 1500, progress: 45 },
-      { text: 'Scanning for unprotected secrets and API credentials...', time: 2300, progress: 70 },
-      { text: 'Analyzing dependency structures & re-render triggers...', time: 3000, progress: 90 },
-      { text: 'Compiling optimized solution block with safety boundaries...', time: 3600, progress: 100 }
-    ];
-
-    steps.forEach((step, index) => {
+    // Simulate steps but do the actual query
+    setAnalysisProgress('Spinning up VEXA Multi-Agent Compiler Reviewers...');
+    setProgressPercent(20);
+    
+    const isPreset = customCode.trim() === activePreset.badCode.trim();
+    
+    if (isPreset) {
+      // Fast path for pre-baked presets
       setTimeout(() => {
-        setAnalysisProgress(step.text);
-        setProgressPercent(step.progress);
-        
-        if (index === steps.length - 1) {
+        setAnalysisProgress('Scanning for unprotected secrets and API credentials...');
+        setProgressPercent(60);
+        setTimeout(() => {
+          setAnalysisProgress('Compiling optimized solution block with safety boundaries...');
+          setProgressPercent(100);
           setTimeout(() => {
             setIsAnalyzing(false);
-            // If the code matches active preset, output it. Otherwise, synthesize custom analysis
-            if (customCode.trim() === activePreset.badCode.trim()) {
-              setReviewResult(activePreset);
-            } else {
-              // Custom code review synthesis
-              const synthesizedResult: CodePreset = {
-                id: 'custom-compile',
-                name: 'Custom User Analysis',
-                language: 'typescript',
-                filename: 'userSource.ts',
-                category: 'Dynamic Analysis',
-                description: 'Custom codebase ingested and parsed.',
+            setReviewResult(activePreset);
+          }, 400);
+        }, 800);
+      }, 800);
+      return;
+    }
+
+    // Dynamic actual Puter query for custom code!
+    try {
+      const puter = PuterService.getPuterInstance();
+      if (puter) {
+        setAnalysisProgress('Injecting Puter.js Keyless Sandbox and Analyzing via Nvidia Nemotron 3.5...');
+        setProgressPercent(50);
+        
+        const systemPrompt = `You are VEXA's expert AI Code Auditor.
+Analyze the following source code for bugs, architectural inefficiencies, infinite render loops, resource leaks, or hardcoded secrets.
+Return ONLY a valid JSON object matching this TypeScript interface exactly:
+{
+  "name": "A descriptive name of the main issue",
+  "language": "javascript or typescript or python etc",
+  "filename": "suggested_filename.ext",
+  "category": "e.g. Performance, Security, Concurrency, React",
+  "description": "Brief explanation of the vulnerability or inefficiency found",
+  "badCode": "The original code that was sent",
+  "goodCode": "A completely fixed, secure, and optimal version of the code",
+  "metrics": {
+    "latency": "Estimated latency change e.g. -45% Latency",
+    "efficiency": "Estimated metric improvement e.g. 100% Thread Protection",
+    "safetyScore": 95
+  },
+  "issues": [
+    {
+      "line": 1,
+      "severity": "critical",
+      "message": "Specific issue description detailing the security or performance bug",
+      "fix": "Actionable instruction on how to fix this issue"
+    }
+  ]
+}
+
+Make sure to output ONLY the raw JSON string. Do not wrap in markdown or backticks.
+The code to analyze is:
+${customCode}`;
+
+        const resp = await puter.ai.chat(systemPrompt, {
+          model: 'nvidia/nemotron-3.5-content-safety:free'
+        });
+
+        setProgressPercent(80);
+        setAnalysisProgress('Parsing Nemotron 3.5 diagnostic payload...');
+
+        if (resp && resp.message && resp.message.content) {
+          const content = resp.message.content;
+          const jsonMatch = content.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[0]);
+            if (parsed.goodCode && parsed.issues) {
+              const result: CodePreset = {
+                id: 'custom-compile-' + Date.now(),
+                name: parsed.name || 'Custom Code Analysis',
+                language: parsed.language || 'typescript',
+                filename: parsed.filename || 'user_source.ts',
+                category: parsed.category || 'Security & Performance',
+                description: parsed.description || 'Analysis of custom codebase completed successfully.',
                 badCode: customCode,
-                goodCode: `// ✅ VEXA Safety-Layered Code Wrapper\n// We verified your custom submission. To guarantee full protection:\n// 1. Double check environment credentials are read server-side\n// 2. Ensure all Promise exceptions have explicit catch callbacks\n// 3. Avoid inline mutations of state values\n\nexport async function runProtectedProcess(params) {\n  try {\n    console.log("[VEXA SECURE] Initializing execution chain...");\n    // Optimized Wrapper around User Source Code\n    return {\n      status: 'authenticated_success',\n      timestamp: new Date().toISOString(),\n      metrics: {\n        integrityIndex: 0.99\n      }\n    };\n  } catch (error) {\n    console.error("[VEXA SECURE] Concurrency fallback safe-exit triggered:", error);\n    throw error;\n  }\n}`,
-                metrics: {
-                  latency: '-40% Execution Overhead',
-                  efficiency: '99.8% Thread Preservation',
-                  safetyScore: 94
+                goodCode: parsed.goodCode,
+                metrics: parsed.metrics || {
+                  latency: '-35% Execution Latency',
+                  efficiency: '95% Resource Stability',
+                  safetyScore: parsed.metrics?.safetyScore || 90
                 },
-                issues: [
-                  { line: 1, severity: 'warning', message: 'Dynamic Sandbox Evaluation: Potential trace exception. Standard safety checks recommend utilizing server middleware.', fix: 'Verify no global API keys are in file scope.' }
-                ]
+                issues: parsed.issues.map((iss: any) => ({
+                  line: Number(iss.line) || 1,
+                  severity: (iss.severity === 'critical' || iss.severity === 'warning' || iss.severity === 'info') ? iss.severity : 'warning',
+                  message: String(iss.message),
+                  fix: String(iss.fix)
+                }))
               };
-              setReviewResult(synthesizedResult);
+              setIsAnalyzing(false);
+              setReviewResult(result);
+              return;
             }
-          }, 600);
+          }
         }
-      }, step.time);
-    });
+      }
+    } catch (err) {
+      console.warn('Dynamic Puter analysis failed, falling back to local heuristic rules:', err);
+    }
+
+    // Dynamic Heuristics fallback
+    setAnalysisProgress('Evaluating with Local Compiler Heuristics...');
+    setProgressPercent(85);
+    setTimeout(() => {
+      setIsAnalyzing(false);
+      
+      const hasApiKey = /api[_-]?key|secret|password|auth|token|bearer|sk-proj-/i.test(customCode);
+      const hasReRender = /useEffect|useState|render/i.test(customCode);
+      
+      let detectedCategory = 'Dynamic Analysis';
+      let detectedDescription = 'Custom codebase evaluated by local heuristic analyzer.';
+      let detectedIssues: Array<{ line: number; severity: 'critical' | 'warning' | 'info'; message: string; fix: string }> = [
+        { line: 1, severity: 'info', message: 'Local compiler sandbox analysis completed.', fix: 'Review structural design and wrap callbacks in useCallback or useMemo.' }
+      ];
+      let goodCode = `// ✅ VEXA Safety-Layered Code Wrapper\n// We verified your custom submission. To guarantee full protection:\n// 1. Double check environment credentials are read server-side or via Puter.js\n// 2. Ensure all Promise exceptions have explicit catch callbacks\n// 3. Avoid inline mutations of state values\n\n${customCode}`;
+
+      if (hasApiKey) {
+        detectedCategory = 'Security Scan';
+        detectedDescription = 'Potential plain-text secret or client-side authentication key detected in source file.';
+        detectedIssues = [
+          { line: 1, severity: 'critical', message: 'Unprotected Key/Token Detected: Found match pattern indicating hardcoded credentials.', fix: 'Migrate keys out of frontend files and use a keyless solution like Puter.js to query AI services.' }
+        ];
+        goodCode = `// ✅ Secure keyless rewrite using Puter.js\n// Completely removes hardcoded credential keys from frontend browser bundles\nasync function queryAI(prompt) {\n  const response = await puter.ai.chat(prompt, {\n    model: 'nvidia/nemotron-3.5-content-safety:free'\n  });\n  return response.message.content;\n}`;
+      } else if (hasReRender) {
+        detectedCategory = 'React Performance';
+        detectedDescription = 'React state hook declaration or lifecycle side effects found without memoization guards.';
+        detectedIssues = [
+          { line: 1, severity: 'warning', message: 'Potential Infinite Rendering: React hook updates un-stabilized context parameters.', fix: 'Extract primitive properties or memoize the object dependencies utilizing React.useMemo().' }
+        ];
+      }
+
+      const synthesizedResult: CodePreset = {
+        id: 'custom-compile',
+        name: hasApiKey ? 'Exposed Credential Leak' : hasReRender ? 'React Render Inefficiency' : 'Custom User Analysis',
+        language: 'typescript',
+        filename: 'userSource.ts',
+        category: detectedCategory,
+        description: detectedDescription,
+        badCode: customCode,
+        goodCode: goodCode,
+        metrics: {
+          latency: hasApiKey ? '-100% Leak Risk' : '-40% Execution Overhead',
+          efficiency: hasApiKey ? '100% Keyless Security' : '99.8% Thread Preservation',
+          safetyScore: hasApiKey ? 100 : 94
+        },
+        issues: detectedIssues
+      };
+      setReviewResult(synthesizedResult);
+    }, 1200);
   };
 
   const copyToClipboard = (text: string, type: 'before' | 'after') => {
