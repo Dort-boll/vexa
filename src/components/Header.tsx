@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, Menu, X, Github } from 'lucide-react';
+import { Sparkles, Menu, X } from 'lucide-react';
 import { ActiveTab } from '../types';
 import ModelSelector from './ModelSelector';
 
@@ -105,18 +105,6 @@ export default function Header({
       </div>
 
       <div className="flex items-center gap-2 md:gap-3">
-        {/* GitHub Link */}
-        <a
-          href="https://github.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.05] hover:border-white/[0.1] text-slate-300 hover:text-white transition-all cursor-pointer font-mono text-[10px] md:text-xs shadow-md"
-          title="Open Repository in GitHub"
-        >
-          <Github className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">GitHub</span>
-        </a>
-
         {/* Model Selection Tool dropdown */}
         <ModelSelector
           selectedModel={selectedModel}
