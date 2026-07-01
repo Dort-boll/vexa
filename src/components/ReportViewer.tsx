@@ -21,7 +21,7 @@ export default function ReportViewer({ report, onReaudit }: ReportViewerProps) {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(report, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `VEXA-Diagnostic-${report.id}.json`);
+    downloadAnchor.setAttribute("download", `Vayu-Diagnostic-${report.id}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -407,7 +407,7 @@ export default function ReportViewer({ report, onReaudit }: ReportViewerProps) {
           {/* After Prompt */}
           <div className="bg-black/80 border border-slate-900 rounded-xl p-4 relative font-mono text-xs">
             <div className="flex justify-between items-center mb-3">
-              <span className="text-indigo-400 bg-indigo-500/5 border border-indigo-500/20 px-2 py-0.5 rounded uppercase tracking-wider text-[10px] font-semibold">VEXA Optimized Template</span>
+              <span className="text-indigo-400 bg-indigo-500/5 border border-indigo-500/20 px-2 py-0.5 rounded uppercase tracking-wider text-[10px] font-semibold">Vayu Optimized Template</span>
               <button 
                 onClick={() => copyToClipboard(report.promptImprovements.after, 'after')} 
                 className="text-slate-500 hover:text-white transition-colors cursor-pointer"

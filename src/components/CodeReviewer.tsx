@@ -286,9 +286,9 @@ ${customCode}`;
     if (!reviewResult) return;
     setIsConsoleSimulating(true);
     setConsoleLogs([
-      '⚡ [VEXA COMPILER] Booting sandbox virtualization execution chamber...',
-      '🛠️ [VEXA COMPILER] Building abstract syntax dependency trees...',
-      `🚀 [VEXA COMPILER] Deploying virtual environment for '${reviewResult.filename}'...`
+      '⚡ [VAYU COMPILER] Booting sandbox virtualization execution chamber...',
+      '🛠️ [VAYU COMPILER] Building abstract syntax dependency trees...',
+      `🚀 [VAYU COMPILER] Deploying virtual environment for '${reviewResult.filename}'...`
     ]);
 
     const logs = [
@@ -538,7 +538,7 @@ ${customCode}`;
                           </div>
                           <p className="text-xs text-slate-200 font-sans leading-relaxed">{issue.message}</p>
                           <div className="bg-blue-500/5 border border-blue-500/10 p-2.5 rounded-lg text-[11px] font-mono text-blue-300 mt-2">
-                            <strong className="text-white block text-[9px] uppercase tracking-wider mb-0.5">VEXA AUTO-FIX:</strong>
+                            <strong className="text-white block text-[9px] uppercase tracking-wider mb-0.5">VAYU AUTO-FIX:</strong>
                             {issue.fix}
                           </div>
                         </div>

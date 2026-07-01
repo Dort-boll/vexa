@@ -126,7 +126,7 @@ export default function InputSection({ onSubmit, isAnalyzing }: InputSectionProp
   useEffect(() => {
     if (isAnalyzing) {
       setActivePipelineIndex(0);
-      setPipelineLogs(["[SYSTEM] Virtualizing VEXA AGI sandbox environment..."]);
+      setPipelineLogs(["[SYSTEM] Virtualizing VEXA sandbox environment..."]);
       
       const logTicks = [
         "Injected security scanner: auditing prompt buffer vectors...",

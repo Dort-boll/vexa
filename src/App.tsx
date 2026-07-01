@@ -1000,7 +1000,7 @@ ${optPromptInput}
                         <span className="text-[10px] text-slate-500 font-semibold block uppercase">Active environment variables</span>
                         <div className="space-y-1 text-slate-400 text-[11px]">
                           <div><strong className="text-slate-500">VAYU_CORE_VERSION:</strong> v3.2.0 (Active)</div>
-                          <div><strong className="text-slate-500">VEXA_MODEL_CLASS:</strong> Vayu AGI CoT</div>
+                          <div><strong className="text-slate-500">VAYU_MODEL_CLASS:</strong> Vayu AGI CoT</div>
                           <div><strong className="text-slate-500">SECURE_SANDBOX_CONTEXT:</strong> Isolated Local Engine</div>
                           <div><strong className="text-slate-500">DEPLOYMENT_RUNTIME:</strong> Edge Optimized Serverless</div>
                         </div>

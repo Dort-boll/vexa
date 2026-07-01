@@ -5,7 +5,7 @@ import { ChevronDown, Cpu, Sparkles, Search, Check, Brain, Zap } from 'lucide-re
 export interface ModelDetail {
   id: string;
   name: string;
-  provider: 'Google' | 'OpenAI' | 'Anthropic' | 'Meta' | 'DeepSeek' | 'Custom' | 'Nvidia';
+  provider: 'Google' | 'OpenAI' | 'Anthropic' | 'Meta' | 'DeepSeek' | 'Custom' | 'Nvidia' | 'Vayu';
   category: 'Reasoning' | 'General' | 'Lightweight';
   contextWindow: string;
   speed: 'Ultra-Fast' | 'Fast' | 'Moderate' | 'Deep-Thinking';
@@ -15,12 +15,12 @@ export interface ModelDetail {
 export const ALL_MODELS: ModelDetail[] = [
   {
     id: 'nvidia/nemotron-3.5-content-safety:free',
-    name: 'Nvidia Nemotron 3.5 Content Safety (Free)',
-    provider: 'Nvidia',
+    name: 'Vayu AGI 6',
+    provider: 'Vayu',
     category: 'Reasoning',
     contextWindow: '128K',
     speed: 'Ultra-Fast',
-    description: 'High performance open-weights safety-aligned model hosted on Puter cloud sandbox.'
+    description: 'Autonomous keyless reasoning core utilizing advanced high-dimensional inference pathways.'
   }
 ];
 
@@ -87,6 +87,7 @@ export default function ModelSelector({
 
   const getProviderColor = (provider: string) => {
     switch (provider) {
+      case 'Vayu': return 'text-purple-400 bg-purple-500/10 border-purple-500/20';
       case 'Nvidia': return 'text-lime-400 bg-lime-500/10 border-lime-500/20';
       case 'Google': return 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20';
       case 'OpenAI': return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
